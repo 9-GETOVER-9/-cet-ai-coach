@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --color-brand-50: oklch(0.97 0.02 250);
+  --color-brand-500: oklch(0.62 0.20 250);
+  --color-brand-600: oklch(0.55 0.22 250);
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background: oklch(0.99 0.005 240);
+  color: oklch(0.20 0.01 240);
+  font-family: var(--font-sans);
+}
+
+.card {
+  background: white;
+  border: 1px solid oklch(0.93 0.005 240);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.stat-num {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}

@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CET 四六级 AI 教练 V1 — 介绍</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #09090b;
+      --bg-card: #18181b;
+      --bg-elevated: #27272a;
+      --text: #fafafa;
+      --text-muted: #a1a1aa;
+      --text-dim: #71717a;
+      --accent: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.15);
+      --accent-light: #818cf8;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --cyan: #06b6d4;
+      --border: #27272a;
+      --slide-w: 1920px;
+      --slide-h: 1080px;
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      font-family: 'Inter', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* ── Slide Container ── */
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 80px 120px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      transform: translateY(20px);
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    /* ── Navigation ── */
+    .nav {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      z-index: 100;
+      background: rgba(24, 24, 27, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 20px;
+    }
+
+    .nav button {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 18px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .nav button:hover { color: var(--text); background: var(--bg-elevated); }
+    .nav button:disabled { opacity: 0.3; cursor: default; }
+    .nav button:disabled:hover { background: none; color: var(--text-muted); }
+
+    .slide-counter {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--text-dim);
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .dots {
+      display: flex;
+      gap: 6px;
+    }
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--bg-elevated);
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    .dot.active {
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent-glow);
+      width: 20px;
+      border-radius: 3px;
+    }
+
+    /* ── Typography ── */
+    .slide-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent-light);
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 72px;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -2px;
+      margin-bottom: 24px;
+    }
+
+    h2 {
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+    }
+
+    h3 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      font-size: 22px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 700px;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── Slide 0: Cover ── */
+    .cover { text-align: center; }
+    .cover h1 {
+      font-size: 88px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .cover .subtitle {
+      max-width: 600px;
+      margin: 0 auto 40px;
+    }
+    .cover-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-glow);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 999px;
+      padding: 8px 20px;
+      font-size: 14px;
+      color: var(--accent-light);
+      font-weight: 500;
+      margin-bottom: 32px;
+    }
+    .cover-badge .pulse {
+      width: 8px; height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .cover-meta {
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .cover-meta span {
+      font-size: 14px;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── Slide 1: Problem ── */
+    .problem-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      width: 100%;
+      max-width: 1400px;
+      margin-top: 40px;
+    }
+    .problem-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      transition: border-color 0.3s;
+    }
+    .problem-card:hover { border-color: var(--accent); }
+    .problem-card .icon {
+      font-size: 36px;
+      margin-bottom: 16px;
+    }
+    .problem-card p {
+      color: var(--text-muted);
+      font-size: 18px;
+      line-height: 1.7;
+    }
+
+    /* ── Slide 2: Solution Overview ── */
+    .solution-layout {
+      display: flex;
+      gap: 60px;
+      width: 100%;
+      max-width: 1500px;
+      align-items: center;
+      margin-top: 40px;
+    }
+    .solution-left { flex: 1; }
+    .solution-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .feature-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 28px;
+      transition: all 0.3s;
+    }
+    .feature-row:hover {
+      border-color: var(--accent);
+      transform: translateX(8px);
+    }
+    .feature-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .feature-row .fi-write { background: rgba(99,102,241,0.15); }
+    .feature-row .fi-listen { background: rgba(34,197,94,0.15); }
+    .feature-row .fi-read { background: rgba(6,182,212,0.15); }
+    .feature-row .fi-trans { background: rgba(245,158,11,0.15); }
+    .feature-row .fi-vocab { background: rgba(244,63,94,0.15); }
+    .feature-row .fi-dash { background: rgba(168,85,247,0.15); }
+
+    .feature-row .label {
+      font-weight: 600;
+      font-size: 17px;
+    }
+    .feature-row .desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ── Slide 3: Architecture ── */
+    .arch-container {
+      width: 100%;
+      max-width: 1400px;
+      margin-top: 40px;
+    }
+    .arch-diagram {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .arch-layer {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+      min-width: 200px;
+      flex: 1;
+      max-width: 300px;
+    }
+    .arch-layer .layer-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--accent-light);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .arch-layer .layer-items {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 2;
+    }
+    .arch-arrow {
+      font-size: 24px;
+      color: var(--text-dim);
+    }
+    .arch-data-box {
+      margin-top: 32px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(6,182,212,0.08));
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: 16px;
+      padding: 28px 40px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .arch-data-box .lock-icon {
+      font-size: 32px;
+    }
+    .arch-data-box .data-text {
+      font-size: 17px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .arch-data-box .data-text strong {
+      color: var(--text);
+    }
+
+    /* ── Slide 4: Commands ── */
+    .cmd-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      width: 100%;
+      max-width: 1400px;
+      margin-top: 40px;
+    }
+    .cmd-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px;
+      transition: all 0.3s;
+      cursor: default;
+    }
+    .cmd-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    }
+    .cmd-card .cmd-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--accent-light);
+      margin-bottom: 10px;
+    }
+    .cmd-card .cmd-desc {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .cmd-card .cmd-icon {
+      font-size: 28px;
+      margin-bottom: 14px;
+    }
+
+    /* ── Slide 5: Data Schema ── */
+    .schema-container {
+      display: flex;
+      gap: 40px;
+      width: 100%;
+      max-width: 1500px;
+      margin-top: 40px;
+    }
+    .tree-panel {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      line-height: 2;
+      color: var(--text-muted);
+    }
+    .tree-panel .dir { color: var(--accent-light); }
+    .tree-panel .file { color: var(--text-muted); }
+    .tree-panel .yaml { color: var(--green); }
+
+    .schema-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .schema-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+    }
+    .schema-item h3 {
+      font-size: 17px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .schema-item p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ── Slide 6: Dashboard ── */
+    .dashboard-preview {
+      width: 100%;
+      max-width: 1400px;
+      margin-top: 40px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .dash-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 20px;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+    }
+    .dash-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+    }
+    .dash-dot.r { background: #ef4444; }
+    .dash-dot.y { background: #eab308; }
+    .dash-dot.g { background: #22c55e; }
+    .dash-url {
+      flex: 1;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+    .dash-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      padding: 28px;
+    }
+    .dash-stat {
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+    }
+    .dash-stat .stat-value {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .dash-stat .stat-label {
+      font-size: 13px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .dash-stat.s1 .stat-value { color: var(--accent-light); }
+    .dash-stat.s2 .stat-value { color: var(--green); }
+    .dash-stat.s3 .stat-value { color: var(--cyan); }
+
+    .dash-chart {
+      grid-column: 1 / -1;
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 24px;
+      height: 200px;
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      justify-content: center;
+    }
+    .bar {
+      width: 40px;
+      border-radius: 6px 6px 0 0;
+      transition: height 0.6s ease;
+    }
+    .bar.b1 { background: var(--accent); }
+    .bar.b2 { background: var(--accent-light); }
+
+    /* ── Slide 7: Privacy ── */
+    .privacy-layout {
+      display: flex;
+      gap: 60px;
+      width: 100%;
+      max-width: 1400px;
+      align-items: center;
+      margin-top: 40px;
+    }
+    .privacy-left { flex: 1; }
+    .privacy-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .privacy-card {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+    }
+    .privacy-card .pc-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .privacy-card h3 { font-size: 16px; margin-bottom: 4px; }
+    .privacy-card p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+    /* ── Slide 8: Get Started ── */
+    .start-layout {
+      text-align: center;
+      max-width: 900px;
+    }
+    .start-layout h1 {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+    .install-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px 40px;
+      margin: 32px auto;
+      max-width: 700px;
+      text-align: left;
+    }
+    .install-box .install-title {
+      font-size: 13px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .install-box code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 16px;
+      color: var(--green);
+      line-height: 2;
+    }
+    .start-links {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-top: 32px;
+    }
+    .start-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .start-link.primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .start-link.primary:hover { background: var(--accent-light); }
+    .start-link.secondary {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .start-link.secondary:hover { border-color: var(--accent); }
+
+    /* ── Responsive ── */
+    @media (max-width: 1200px) {
+      .slide { padding: 40px 60px; }
+      h1 { font-size: 48px; }
+      h2 { font-size: 36px; }
+      .cover h1 { font-size: 60px; }
+      .cmd-grid { grid-template-columns: repeat(2, 1fr); }
+      .problem-grid { grid-template-columns: 1fr; }
+      .schema-container { flex-direction: column; }
+      .privacy-layout { flex-direction: column; }
+      .solution-layout { flex-direction: column; }
+      .dash-body { grid-template-columns: 1fr; }
+    }
+
+    /* ── Keyboard hint ── */
+    .kb-hint {
+      position: fixed;
+      top: 24px;
+      right: 32px;
+      font-size: 12px;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+      z-index: 100;
+      opacity: 0.6;
+    }
+    .kb-hint kbd {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+  <div class="kb-hint"><kbd>←</kbd> <kbd>→</kbd> 翻页 &nbsp;|&nbsp; <kbd>Home</kbd> <kbd>End</kbd> 首尾</div>
+
+  <div class="deck" id="deck">
+
+    <!-- ════════ SLIDE 0: COVER ════════ -->
+    <div class="slide cover active" data-index="0">
+      <div class="cover-badge">
+        <span class="pulse"></span>
+        <span>Open Source · MIT License</span>
+      </div>
+      <h1>CET 四六级 AI 教练</h1>
+      <p class="subtitle">
+        一套装在你自己电脑上的 CET-4/CET-6 备考工具：AI 教练 + 本地数据仪表板。<br>
+        所有数据只在你电脑里，没有云端，没有账号。
+      </p>
+      <div class="cover-meta">
+        <span>7 个 Skill 模块</span>
+        <span>本地数据 · 零隐私风险</span>
+        <span>React + Express 仪表板</span>
+        <span>V1.0.0</span>
+      </div>
+    </div>
+
+    <!-- ════════ SLIDE 1: PROBLEM ════════ -->
+    <div class="slide" data-index="1">
+      <div class="slide-label">01 / 痛点</div>
+      <h2>四六级备考的困境</h2>
+      <p class="subtitle" style="margin-bottom: 10px;">传统备考方式存在几个核心问题</p>
+      <div class="problem-grid">
+        <div class="problem-card">
+          <div class="icon">📝</div>
+          <h3>写了没人改</h3>
+          <p>作文和翻译写完没有专业反馈，不知道自己的分数水平和具体问题在哪里，只能靠猜。</p>
+        </div>
+        <div class="problem-card">
+          <div class="icon">🎧</div>
+          <h3>听力错因不明</h3>
+          <p>听力做完只看到对错，不知道是因为干扰项、同义替换还是数字陷阱导致的错误。</p>
+        </div>
+        <div class="problem-card">
+          <div class="icon">📊</div>
+          <h3>没有数据追踪</h3>
+          <p>练了很多天但看不到进步趋势，不知道哪个模块最拖后腿，备考缺乏方向感。</p>
+        </div>
+        <div class="problem-card">
+          <div class="icon">☁️</div>
+          <h3>隐私存疑</h3>
+          <p>在线平台需要注册账号，学习数据上传云端，个人备考信息不受自己控制。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════ SLIDE 2: SOLUTION ════════ -->
+    <div class="slide" data-index="2">
+      <div class="slide-label">02 / 解决方案</div>
+      <h2>七大 AI 教练模块</h2>
+      <div class="solution-layout">
+        <div class="solution-left">
+          <p class="subtitle">
+            基于 Claude Code Skills 架构，每个模块是一个独立的 AI 教练。
+            用 <span class="mono" style="color:var(--accent-light)">/cet</span> 命令一键调用，
+            教练会审题、批改、估分、分析错因，然后把所有数据沉淀到本地文件。
+          </p>
+          <p class="subtitle" style="margin-top: 16px; font-size: 17px;">
+            程序和数据完全分离。升级 Skill 不会删除你的学习数据。
+          </p>
+        </div>
+        <div class="solution-right">
+          <div class="feature-row">
+            <div class="feature-icon fi-write">✍️</div>
+            <div><div class="label">写作教练</div><div class="desc">审题、批改、估分、范文升级</div></div>
+          </div>
+          <div class="feature-row">
+            <div class="feature-icon fi-listen">🎧</div>
+            <div><div class="label">听力教练</div><div class="desc">错题分析、精听任务、错因聚类</div></div>
+          </div>
+          <div class="feature-row">
+            <div class="feature-icon fi-read">📖</div>
+            <div><div class="label">阅读教练</div><div class="desc">选词填空、长篇匹配、仔细阅读</div></div>
+          </div>
+          <div class="feature-row">
+            <div class="feature-icon fi-trans">🌐</div>
+            <div><div class="label">翻译教练</div><div class="desc">汉译英批改、中式英语纠正</div></div>
+          </div>
+          <div class="feature-row">
+            <div class="feature-icon fi-vocab">📚</div>
+            <div><div class="label">词汇训练</div><div class="desc">每日推词、间隔复习、难词池</div></div>
+          </div>
+          <div class="feature-row">
+            <div class="feature-icon fi-dash">📈</div>
+            <div><div class="label">诊断 + 仪表盘</div><div class="desc">成绩诊断、计划生成、可视化追踪</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════ SLIDE 3: ARCHITECTURE ════════ -->
+    <div class="slide" data-index="3">
+      <div class="slide-label">03 / 技术架构</div>
+      <h2>Claude Code Skills 驱动</h2>
+      <div class="arch-container">
+        <div class="arch-diagram">
+          <div class="arch-layer">
+            <div class="layer-title">用户层</div>
+            <div class="layer-items">
+              <div>/cet 命令入口</div>
+              <div>Claude Code CLI</div>
+              <div>终端交互</div>
+            </div>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-layer">
+            <div class="layer-title">Skill 层</div>
+            <div class="layer-items">
+              <div>cet (路由)</div>
+              <div>cet-writing</div>
+              <div>cet-listening</div>
+              <div>cet-reading</div>
+              <div>cet-translation</div>
+              <div>cet-vocab</div>
+              <div>cet-diagnose</div>
+            </div>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-layer">
+            <div class="layer-title">数据层</div>
+            <div class="layer-items">
+              <div>YAML frontmatter</div>
+              <div>Markdown 报告</div>
+              <div>本地文件系统</div>
+            </div>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-layer">
+            <div class="layer-title">展示层</div>
+            <div class="layer-items">
+              <div>React Dashboard</div>
+              <div>Express API</div>
+              <div>Recharts 图表</div>
+            </div>
+          </div>
+        </div>
+        <div class="arch-data-box">
+          <div class="lock-icon">🔒</div>
+          <div class="data-text">
+            <strong>数据主权原则：</strong>所有学习数据以标准化 YAML + Markdown 格式写入本地 <code style="color:var(--green)">cet-data/</code> 目录。
+            Dashboard 只读取本地文件，不联网、不上传、不注册。SCHEMA.md 定义了完整的数据规范，确保所有模块数据格式统一、可扩展。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════ SLIDE 4: COMMANDS ════════ -->
+    <div class="slide" data-index="4">
+      <div class="slide-label">04 / 命令速查</div>
+      <h2>一条命令，开始训练</h2>
+      <p class="subtitle" style="margin-bottom: 10px;">在 Claude Code 中输入以下任意命令即可启动对应教练</p>
+      <div class="cmd-grid">
+        <div class="cmd-card">
+          <div class="cmd-icon">🚀</div>
+          <div class="cmd-name">/cet</div>
+          <div class="cmd-desc">总入口。首次使用会进行摸底，然后路由到具体模块。</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-icon">🩺</div>
+          <div class="cmd-name">/cet-diagnose</div>
+          <div class="cmd-desc">成绩诊断。根据目标分和当前水平生成 2-8 周备考计划。</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-icon">✍️</div>
+          <div class="cmd-name">/cet-writing</div>
+          <div class="cmd-desc">写作批改。审题建议、四项评分、目标分范文升级。</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-icon">🎧</div>
+          <div class="cmd-name">/cet-listening</div>
+          <div class="cmd-desc">听力分析。错因聚类、精听任务、信号词表。</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-icon">📖</div>
+          <div class="cmd-name">/cet-reading</div>
+          <div class="cmd-desc">阅读精读。三种题型分析、同义替换积累。</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-icon">🌐</div>
+          <div class="cmd-name">/cet-translation</div>
+          <div class="cmd-desc">翻译教练。中式英语纠正、主题表达积累。</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-icon">📚</div>
+          <div class="cmd-name">/cet-vocab</div>
+          <div class="cmd-desc">词汇训练。每日推词、间隔复习、难词复盘。</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-icon">📊</div>
+          <div class="cmd-name">/cet-dashboard</div>
+          <div class="cmd-desc">可视化仪表盘。分数趋势、分项表现、学习热力图。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════ SLIDE 5: DATA SCHEMA ════════ -->
+    <div class="slide" data-index="5">
+      <div class="slide-label">05 / 数据规范</div>
+      <h2>标准化的本地数据架构</h2>
+      <div class="schema-container">
+        <div class="tree-panel">
+          <div><span class="dir">cet-data/</span></div>
+          <div>&nbsp;&nbsp;├─ <span class="file">profile.md</span> <span style="color:var(--text-dim)">← 学员档案</span></div>
+          <div>&nbsp;&nbsp;├─ <span class="file">scores.md</span> <span style="color:var(--text-dim)">← 成绩记录</span></div>
+          <div>&nbsp;&nbsp;├─ <span class="dir">writing/</span></div>
+          <div>&nbsp;&nbsp;│&nbsp;&nbsp;└─ <span class="dir">submissions/</span></div>
+          <div>&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="yaml">YYYYMMDD_topic.md</span></div>
+          <div>&nbsp;&nbsp;├─ <span class="dir">reading/</span></div>
+          <div>&nbsp;&nbsp;│&nbsp;&nbsp;├─ <span class="dir">submissions/</span></div>
+          <div>&nbsp;&nbsp;│&nbsp;&nbsp;└─ <span class="dir">synonyms/</span></div>
+          <div>&nbsp;&nbsp;├─ <span class="dir">listening/</span></div>
+          <div>&nbsp;&nbsp;│&nbsp;&nbsp;└─ <span class="dir">submissions/</span></div>
+          <div>&nbsp;&nbsp;├─ <span class="dir">translation/</span></div>
+          <div>&nbsp;&nbsp;│&nbsp;&nbsp;└─ <span class="dir">submissions/</span></div>
+          <div>&nbsp;&nbsp;└─ <span class="dir">vocab/</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="dir">days/</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="file">difficult.yaml</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="file">mastered.yaml</span></div>
+        </div>
+        <div class="schema-info">
+          <div class="schema-item">
+            <h3>📋 YAML Frontmatter</h3>
+            <p>每个提交文件头部包含结构化 YAML 元数据：日期、考试类型、分项得分、错因标签、用时等。Dashboard 直接解析这些元数据生成图表。</p>
+          </div>
+          <div class="schema-item">
+            <h3>📄 Markdown 正文</h3>
+            <p>Frontmatter 下方是给用户看的详细分析报告：逐题复盘、错因解释、改进建议、范文等。既是数据源也是阅读材料。</p>
+          </div>
+          <div class="schema-item">
+            <h3>📐 SCHEMA.md 规范</h3>
+            <p>所有 Skill 写入数据时必须遵守统一的 SCHEMA.md 规范。确保模块间数据格式一致，Dashboard 能可靠聚合所有数据。</p>
+          </div>
+          <div class="schema-item">
+            <h3>💾 程序与数据分离</h3>
+            <p>Skill 代码安装在 <code style="color:var(--green)">~/.claude/skills/</code>，学习数据存储在 <code style="color:var(--green)">cet-data/</code>。升级不会丢失数据。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════ SLIDE 6: DASHBOARD ════════ -->
+    <div class="slide" data-index="6">
+      <div class="slide-label">06 / 可视化仪表盘</div>
+      <h2>本地 Dashboard，实时追踪进度</h2>
+      <div class="dashboard-preview">
+        <div class="dash-titlebar">
+          <div class="dash-dot r"></div>
+          <div class="dash-dot y"></div>
+          <div class="dash-dot g"></div>
+          <div class="dash-url">localhost:5173</div>
+        </div>
+        <div class="dash-body">
+          <div class="dash-stat s1">
+            <div class="stat-value">520</div>
+            <div class="stat-label">最新估分 / 710</div>
+          </div>
+          <div class="dash-stat s2">
+            <div class="stat-value">+65</div>
+            <div class="stat-label">较首次诊断</div>
+          </div>
+          <div class="dash-stat s3">
+            <div class="stat-value">18</div>
+            <div class="stat-label">累计练习天数</div>
+          </div>
+          <div class="dash-chart" id="chart">
+            <!-- bars injected by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════ SLIDE 7: PRIVACY ════════ -->
+    <div class="slide" data-index="7">
+      <div class="slide-label">07 / 隐私与安全</div>
+      <h2>你的数据，只在你手里</h2>
+      <div class="privacy-layout">
+        <div class="privacy-left">
+          <p class="subtitle" style="font-size: 24px; line-height: 1.8;">
+            这不是一个 SaaS 产品。它是一个装在你电脑上的工具箱。
+            <strong style="color:var(--text)">没有注册、没有云端、没有追踪。</strong>
+          </p>
+          <p class="subtitle" style="margin-top: 20px; font-size: 18px;">
+            所有学习数据以纯文本（YAML + Markdown）存储在你指定的本地目录。
+            你可以随时用任何文本编辑器查看、修改、备份、删除。
+          </p>
+        </div>
+        <div class="privacy-right">
+          <div class="privacy-card">
+            <div class="pc-icon">🚫</div>
+            <div>
+              <h3>零网络依赖</h3>
+              <p>数据写入和读取全部在本地文件系统完成，Dashboard 不发送任何网络请求。</p>
+            </div>
+          </div>
+          <div class="privacy-card">
+            <div class="pc-icon">📁</div>
+            <div>
+              <h3>纯文本存储</h3>
+              <p>YAML + Markdown 格式，没有数据库、没有二进制文件，人类可读可编辑。</p>
+            </div>
+          </div>
+          <div class="privacy-card">
+            <div class="pc-icon">🔑</div>
+            <div>
+              <h3>数据可迁移</h3>
+              <p>整个 cet-data 目录可以复制、Git 管理、跨设备同步，完全由你控制。</p>
+            </div>
+          </div>
+          <div class="privacy-card">
+            <div class="pc-icon">♻️</div>
+            <div>
+              <h3>程序数据分离</h3>
+              <p>升级或重装 Skill 不会影响已有的学习数据，二者物理隔离。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════ SLIDE 8: GET STARTED ════════ -->
+    <div class="slide" data-index="8">
+      <div class="start-layout">
+        <div class="slide-label">08 / 开始使用</div>
+        <h1>三步开始备考</h1>
+        <p class="subtitle" style="margin: 0 auto;">
+          安装 Skill，打开 Claude Code，输入 /cet，AI 教练即刻就位。
+        </p>
+        <div class="install-box">
+          <div class="install-title">安装命令</div>
+          <code>
+            # Windows<br>
+            双击 install.bat<br><br>
+            # Mac / Linux<br>
+            bash install.sh<br><br>
+            # 首次启动 Dashboard<br>
+            cd ~/.claude/skills/cet-dashboard/dashboard<br>
+            npm install && npm start
+          </code>
+        </div>
+        <div class="start-links">
+          <a class="start-link primary" href="https://github.com" target="_blank">
+            ⭐ GitHub 仓库
+          </a>
+          <a class="start-link secondary" href="#" onclick="alert('阅读 README.md 了解详情')">
+            📖 查看文档
+          </a>
+        </div>
+        <p style="margin-top: 40px; font-size: 15px; color: var(--text-dim);">
+          MIT License · 开源免费 · 欢迎贡献
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Navigation Bar ── -->
+  <div class="nav">
+    <button id="btnFirst" title="第一页">⟪</button>
+    <button id="btnPrev" title="上一页">←</button>
+    <div class="dots" id="dots"></div>
+    <span class="slide-counter" id="counter">1 / 9</span>
+    <button id="btnNext" title="下一页">→</button>
+    <button id="btnLast" title="最后一页">⟫</button>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const total = slides.length;
+    let current = 0;
+
+    // Restore last position
+    const saved = localStorage.getItem('cet-deck-slide');
+    if (saved !== null) {
+      const idx = parseInt(saved, 10);
+      if (idx >= 0 && idx < total) current = idx;
+    }
+
+    // Build dots
+    const dotsEl = document.getElementById('dots');
+    for (let i = 0; i < total; i++) {
+      const d = document.createElement('div');
+      d.className = 'dot' + (i === current ? ' active' : '');
+      d.addEventListener('click', () => goTo(i));
+      dotsEl.appendChild(d);
+    }
+
+    function goTo(n) {
+      if (n < 0 || n >= total) return;
+      slides[current].classList.remove('active');
+      dotsEl.children[current].classList.remove('active');
+      current = n;
+      slides[current].classList.add('active');
+      dotsEl.children[current].classList.add('active');
+      document.getElementById('counter').textContent = (current + 1) + ' / ' + total;
+      document.getElementById('btnPrev').disabled = current === 0;
+      document.getElementById('btnNext').disabled = current === total - 1;
+      document.getElementById('btnFirst').disabled = current === 0;
+      document.getElementById('btnLast').disabled = current === total - 1;
+      localStorage.setItem('cet-deck-slide', current);
+    }
+
+    document.getElementById('btnPrev').addEventListener('click', () => goTo(current - 1));
+    document.getElementById('btnNext').addEventListener('click', () => goTo(current + 1));
+    document.getElementById('btnFirst').addEventListener('click', () => goTo(0));
+    document.getElementById('btnLast').addEventListener('click', () => goTo(total - 1));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+        e.preventDefault(); goTo(current + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault(); goTo(current - 1);
+      } else if (e.key === 'Home') {
+        e.preventDefault(); goTo(0);
+      } else if (e.key === 'End') {
+        e.preventDefault(); goTo(total - 1);
+      }
+    });
+
+    // Init
+    goTo(current);
+
+    // Dashboard chart animation
+    const chartEl = document.getElementById('chart');
+    const mockData = [455, 462, 470, 478, 485, 490, 498, 505, 510, 515, 520];
+    const maxVal = 710;
+    mockData.forEach((v, i) => {
+      const bar = document.createElement('div');
+      bar.className = 'bar ' + (i % 2 === 0 ? 'b1' : 'b2');
+      bar.style.height = '0px';
+      bar.title = '第' + (i + 1) + '次: ' + v + '分';
+      chartEl.appendChild(bar);
+      setTimeout(() => {
+        bar.style.height = Math.round((v / maxVal) * 160) + 'px';
+      }, 200 + i * 80);
+    });
+  </script>
+</body>
+</html>

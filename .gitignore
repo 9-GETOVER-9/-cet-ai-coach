@@ -1,0 +1,22 @@
+# Node dependencies and generated output
+node_modules/
+dist/
+.npm-cache/
+.npm/
+*.log
+coverage/
+
+# Local learning data and private configuration
+cet-data/
+.env
+.env.*
+!.env.example
+
+# Operating-system and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local archives
+*.zip

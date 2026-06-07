@@ -1,0 +1,43 @@
+{
+  "name": "cet-dashboard",
+  "version": "1.0.0",
+  "description": "CET-4/CET-6 local dashboard - visualize D drive CET data",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "concurrently -k -n server,web -c blue,green \"npm:backend\" \"npm:frontend\"",
+    "backend": "node server.js",
+    "frontend": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "seed": "node scripts/seed-demo-data.js",
+    "validate": "node scripts/validate.js",
+    "reset": "node scripts/reset.js",
+    "backup": "node scripts/backup.js",
+    "test": "node tests/cet-smoke.mjs && node tests/static-check.mjs"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "cors": "^2.8.5",
+    "gray-matter": "^4.0.3",
+    "js-yaml": "^4.1.0",
+    "zod": "^3.24.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.1.5",
+    "recharts": "^2.15.0",
+    "clsx": "^2.1.1"
+  },
+  "devDependencies": {
+    "vite": "^6.1.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.0.6",
+    "@tailwindcss/vite": "^4.0.6",
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
+
+
