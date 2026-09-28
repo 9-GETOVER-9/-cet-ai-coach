@@ -1,4 +1,51 @@
-# CET 四六级 AI 教练 V1
+# CET 四六级 AI 教练 · 本地备考闭环
+
+把诊断、专项训练、错因复盘和进度追踪串成一条可重复的学习路径。
+
+**Claude Code Skills · CET-4 / CET-6 · 本地学习记录 · Dashboard**
+
+## 一句话介绍
+
+这是一套面向四六级备考的本地 AI 教练 Skills：按写作、听力、阅读、翻译和词汇分工，并用 Dashboard 查看训练记录。
+
+## 快速安装
+
+```bash
+git clone https://github.com/9-GETOVER-9/-cet-ai-coach.git
+cd -cet-ai-coach
+```
+
+Windows 运行 `install.bat`；Mac / Linux 运行 `bash install.sh`。安装后在 Claude Code 中输入 `/cet`。
+
+## 功能矩阵
+
+| 模块 | 作用 |
+|---|---|
+| `/cet` | 总入口与学习进度路由 |
+| `/cet-diagnose` | 目标分与备考计划 |
+| `/cet-writing` | 写作批改和表达升级 |
+| `/cet-listening` | 听力错因与精听任务 |
+| `/cet-reading` | 阅读定位和题型复盘 |
+| `/cet-translation` | 翻译批改与表达积累 |
+| `/cet-vocab` | 词汇复习与难词池 |
+| `/cet-dashboard` | 趋势与学习时间线 |
+
+## 核心工作流
+
+```text
+诊断 → 选择模块 → 针对性训练 → 保存错因 → Dashboard 复盘 → 下一轮训练
+```
+
+## 项目结构
+
+| 路径 | 用途 |
+|---|---|
+| `cet*/` | 各教练 Skill 与仪表盘 |
+| `SCHEMA.md` | 学习记录格式 |
+| `docs/` | 详细使用指南 |
+| `install.bat` / `install.sh` | 安装脚本 |
+
+## 详细说明
 
 > 把“刷题—对答案—忘记错因”升级为“诊断—训练—复盘—追踪”的本地化备考闭环。
 
