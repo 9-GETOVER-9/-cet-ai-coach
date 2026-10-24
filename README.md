@@ -1,21 +1,38 @@
-# CET 四六级 AI 教练 · 本地备考闭环
+<div align="center">
 
-把诊断、专项训练、错因复盘和进度追踪串成一条可重复的学习路径。
+# CET AI Coach
 
-**Claude Code Skills · CET-4 / CET-6 · 本地学习记录 · Dashboard**
+**让诊断、专项训练、复习与看板形成连续的四六级学习记录。**
+
+`CET-4 / CET-6` · `Claude Code Skills` · `本地学习数据`
+
+[![GitHub Stars](https://img.shields.io/github/stars/9-GETOVER-9/-cet-ai-coach?style=for-the-badge&color=839778)](https://github.com/9-GETOVER-9/-cet-ai-coach/stargazers)
+[![License: MIT](https://img.shields.io/badge/License-MIT-7A9270?style=for-the-badge)](LICENSE)
+
+[快速安装](#section-2) · [功能矩阵](#section-3) · [快速开始](#section-9) · [已知限制](#section-13)
+
+</div>
+
+---
+
+<a id="section-1"></a>
 
 ## 一句话介绍
 
 这是一套面向四六级备考的本地 AI 教练 Skills：按写作、听力、阅读、翻译和词汇分工，并用 Dashboard 查看训练记录。
 
+<a id="section-2"></a>
+
 ## 快速安装
 
 ```bash
 git clone https://github.com/9-GETOVER-9/-cet-ai-coach.git
-cd -cet-ai-coach
+cd ./-cet-ai-coach
 ```
 
 Windows 运行 `install.bat`；Mac / Linux 运行 `bash install.sh`。安装后在 Claude Code 中输入 `/cet`。
+
+<a id="section-3"></a>
 
 ## 功能矩阵
 
@@ -30,11 +47,15 @@ Windows 运行 `install.bat`；Mac / Linux 运行 `bash install.sh`。安装后�
 | `/cet-vocab` | 词汇复习与难词池 |
 | `/cet-dashboard` | 趋势与学习时间线 |
 
+<a id="section-4"></a>
+
 ## 核心工作流
 
 ```text
 诊断 → 选择模块 → 针对性训练 → 保存错因 → Dashboard 复盘 → 下一轮训练
 ```
+
+<a id="section-5"></a>
 
 ## 项目结构
 
@@ -45,7 +66,8 @@ Windows 运行 `install.bat`；Mac / Linux 运行 `bash install.sh`。安装后�
 | `docs/` | 详细使用指南 |
 | `install.bat` / `install.sh` | 安装脚本 |
 
-## 详细说明
+<details>
+<summary>展开配置、维护与详细使用说明</summary>
 
 > 把“刷题—对答案—忘记错因”升级为“诊断—训练—复盘—追踪”的本地化备考闭环。
 
@@ -56,6 +78,8 @@ Windows 运行 `install.bat`；Mac / Linux 运行 `bash install.sh`。安装后�
 > 项目状态：早期可用版本，持续完善中
 
 ---
+
+<a id="section-6"></a>
 
 ## 为什么做这个项目
 
@@ -85,6 +109,8 @@ Windows 运行 `install.bat`；Mac / Linux 运行 `bash install.sh`。安装后�
 
 ---
 
+<a id="section-7"></a>
+
 ## 学习闭环
 
 ```text
@@ -105,6 +131,8 @@ Dashboard 查看趋势
 
 ---
 
+<a id="section-8"></a>
+
 ## Skill 模块
 
 | 模块 | 命令 | 主要作用 | 适合什么时候使用 |
@@ -121,6 +149,8 @@ Dashboard 查看趋势
 更详细的 Skill 使用指南见 [`docs/SKILLS-GUIDE.zh-CN.md`](./docs/SKILLS-GUIDE.zh-CN.md)。
 
 ---
+
+<a id="section-9"></a>
 
 ## 快速开始
 
@@ -186,6 +216,8 @@ http://localhost:5173
 
 ---
 
+<a id="section-10"></a>
+
 ## 本地数据与隐私
 
 练习记录会保存为本地纯文本文件。Dashboard 读取这些文件后生成图表。
@@ -222,6 +254,8 @@ dist/
 
 ---
 
+<a id="section-11"></a>
+
 ## Dashboard 页面
 
 Dashboard 当前提供：
@@ -249,6 +283,8 @@ npm run reset      # 备份后清空学习数据
 
 ---
 
+<a id="section-12"></a>
+
 ## 项目结构
 
 ```text
@@ -272,6 +308,8 @@ cet-ai-coach/
 
 ---
 
+<a id="section-13"></a>
+
 ## 已知限制
 
 - V1 的多个 Skill 仍使用 Windows 默认数据路径，跨平台配置尚未完全统一。
@@ -281,6 +319,8 @@ cet-ai-coach/
 
 ---
 
+<a id="section-14"></a>
+
 ## 文档
 
 - [Skill 详细指南](./docs/SKILLS-GUIDE.zh-CN.md)
@@ -289,6 +329,8 @@ cet-ai-coach/
 - [数据规范](./SCHEMA.md)
 
 ---
+
+<a id="section-15"></a>
 
 ## 路线图
 
@@ -300,10 +342,16 @@ cet-ai-coach/
 
 ---
 
+<a id="section-16"></a>
+
 ## 免责声明
 
 本项目不是全国大学英语四、六级考试官方工具，也不隶属于任何考试机构。所有 AI 生成内容和估分结果仅供学习与备考参考。
 
+<a id="section-17"></a>
+
 ## License
 
 本项目采用 MIT License，详见 [`LICENSE`](./LICENSE)。
+
+</details>
